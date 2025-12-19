@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>YouTube Custom Controls Demo</title>
   <style>
+    /* Hide the video but keep it loaded */
     #player {
       width: 560px;
       height: 315px;
@@ -14,6 +15,7 @@
       left: 0;
     }
 
+    /* Controls container */
     #controls {
       margin-top: 340px;
       display: flex;
@@ -21,14 +23,17 @@
       justify-content: center;
     }
 
+    /* Buttons: responsive sizing */
     button {
-      width: 80px;
-      height: 80px;
+      width: 20vw;          /* 20% of viewport width */
+      height: 20vw;         /* keep square */
+      max-width: 120px;     /* cap size on desktop */
+      max-height: 120px;
       border-radius: 50%;
-      font-size: 28px;
+      font-size: 8vw;       /* scale icon with screen size */
       border: none;
       cursor: pointer;
-      background-color: #1db954;
+      background-color: #1db954; /* green */
       color: white;
       transition: background-color 0.3s, transform 0.2s;
     }
@@ -38,6 +43,7 @@
       transform: scale(1.1);
     }
 
+    /* Restart button styling */
     #restartBtn {
       background-color: #ff4757;
     }
@@ -45,56 +51,68 @@
     #restartBtn:hover {
       background-color: #c0392b;
     }
+
+    /* Extra boost for very small screens */
+    @media (max-width: 480px) {
+      button {
+        width: 25vw;
+        height: 25vw;
+        font-size: 10vw;
+      }
+    }
   </style>
 </head>
 <body>
-<div id="player"></div>
+  <!-- Hidden YouTube player -->
+  <div id="player"></div>
 
-<div id="controls">
-  <button id="playPauseBtn">▶</button>
-  <button id="restartBtn">⟳</button>
-</div>
+  <!-- Custom controls -->
+  <div id="controls">
+    <button id="playPauseBtn">▶</button>
+    <button id="restartBtn">⟳</button>
+  </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
-<script>
-  var player;
-  var isPlaying = false;
-  var hasStarted = false; // track if we've started once
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    var player;
+    var isPlaying = false;
+    var hasStarted = false; // track if video has been started once
 
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-      videoId: 'jausD8qsnKU', // your video ID
-      playerVars: { controls: 0 }
-    });
-  }
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        videoId: 'jausD8qsnKU', // your video ID
+        playerVars: { controls: 0 }
+      });
+    }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    // Play/Pause toggle
-    document.getElementById('playPauseBtn').onclick = () => {
-      if (isPlaying) {
-        player.pauseVideo();
-        document.getElementById('playPauseBtn').textContent = "▶";
-        isPlaying = false;
-      } else {
-        if (!hasStarted) {
-          player.seekTo(30, true); // only jump to 30s the first time
-          hasStarted = true;
+    document.addEventListener("DOMContentLoaded", function() {
+      // Play/Pause toggle
+      document.getElementById('playPauseBtn').onclick = () => {
+        if (isPlaying) {
+          player.pauseVideo();
+          document.getElementById('playPauseBtn').textContent = "▶";
+          isPlaying = false;
+        } else {
+          if (!hasStarted) {
+            player.seekTo(30, true); // only jump to 30s the first time
+            hasStarted = true;
+          }
+          player.playVideo();
+          document.getElementById('playPauseBtn').textContent = "⏸";
+          isPlaying = true;
         }
+      };
+
+      // Restart button
+      document.getElementById('restartBtn').onclick = () => {
+        player.seekTo(30, true);   // always jump back to 30s
         player.playVideo();
         document.getElementById('playPauseBtn').textContent = "⏸";
         isPlaying = true;
-      }
-    };
-
-    // Restart button
-    document.getElementById('restartBtn').onclick = () => {
-      player.seekTo(30, true);   // always jump back to 30s
-      player.playVideo();
-      document.getElementById('playPauseBtn').textContent = "⏸";
-      isPlaying = true;
-      hasStarted = true; // mark as started
-    };
-  });
-</script>
+        hasStarted = true; // mark as started
+      };
+    });
+  </script>
 </body>
 </html>
