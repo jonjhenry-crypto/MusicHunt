@@ -48,46 +48,53 @@
   </style>
 </head>
 <body>
-  <div id="player"></div>
+<div id="player"></div>
 
-  <div id="controls">
-    <button id="playPauseBtn">▶</button>
-    <button id="restartBtn">⟳</button>
-  </div>
+<div id="controls">
+  <button id="playPauseBtn">▶</button>
+  <button id="restartBtn">⟳</button>
+</div>
 
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script>
-    var player;
-    var isPlaying = false;
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  var player;
+  var isPlaying = false;
+  var hasStarted = false; // track if we've started once
 
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        videoId: 'jausD8qsnKU', // your video ID
-        playerVars: { controls: 0 }
-      });
-    }
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'jausD8qsnKU', // your video ID
+      playerVars: { controls: 0 }
+    });
+  }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById('playPauseBtn').onclick = () => {
-        if (isPlaying) {
-          player.pauseVideo();
-          document.getElementById('playPauseBtn').textContent = "▶";
-          isPlaying = false;
-        } else {
-          player.seekTo(30, true); // start at 30s
-          player.playVideo();
-          document.getElementById('playPauseBtn').textContent = "⏸";
-          isPlaying = true;
+  document.addEventListener("DOMContentLoaded", function() {
+    // Play/Pause toggle
+    document.getElementById('playPauseBtn').onclick = () => {
+      if (isPlaying) {
+        player.pauseVideo();
+        document.getElementById('playPauseBtn').textContent = "▶";
+        isPlaying = false;
+      } else {
+        if (!hasStarted) {
+          player.seekTo(30, true); // only jump to 30s the first time
+          hasStarted = true;
         }
-      };
-
-      document.getElementById('restartBtn').onclick = () => {
-        player.seekTo(30, true);
         player.playVideo();
         document.getElementById('playPauseBtn').textContent = "⏸";
         isPlaying = true;
-      };
-    });
-  </script>
+      }
+    };
+
+    // Restart button
+    document.getElementById('restartBtn').onclick = () => {
+      player.seekTo(30, true);   // always jump back to 30s
+      player.playVideo();
+      document.getElementById('playPauseBtn').textContent = "⏸";
+      isPlaying = true;
+      hasStarted = true; // mark as started
+    };
+  });
+</script>
 </body>
 </html>
