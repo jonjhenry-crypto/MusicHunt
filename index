@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Custom Controls Demo</title>
+  <style>
+    #player {
+      width: 560px;
+      height: 315px;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #controls {
+      margin-top: 340px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      font-size: 28px;
+      border: none;
+      cursor: pointer;
+      background-color: #1db954;
+      color: white;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #14833b;
+      transform: scale(1.1);
+    }
+
+    #restartBtn {
+      background-color: #ff4757;
+    }
+
+    #restartBtn:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <div id="player"></div>
+
+  <div id="controls">
+    <button id="playPauseBtn">▶</button>
+    <button id="restartBtn">Restart</button>
+  </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    var player;
+    var isPlaying = false;
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        videoId: 'jausD8qsnKU', // your video ID
+        playerVars: { controls: 0 }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('playPauseBtn').onclick = () => {
+        if (isPlaying) {
+          player.pauseVideo();
+          document.getElementById('playPauseBtn').textContent = "▶";
+          isPlaying = false;
+        } else {
+          player.seekTo(30, true); // start at 30s
+          player.playVideo();
+          document.getElementById('playPauseBtn').textContent = "⏸";
+          isPlaying = true;
+        }
+      };
+
+      document.getElementById('restartBtn').onclick = () => {
+        player.seekTo(30, true);
+        player.playVideo();
+        document.getElementById('playPauseBtn').textContent = "⏸";
+        isPlaying = true;
+      };
+    });
+  </script>
+</body>
+</html>
